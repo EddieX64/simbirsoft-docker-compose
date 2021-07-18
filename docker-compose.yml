@@ -1,0 +1,34 @@
+version: "3.3"
+networks:
+  test:
+
+services:
+    db:
+       image: postgres:11
+       restart: always
+       environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_PASSWORD=postgres
+         - POSTGRES_HOST_AUTH_METHOD=trust
+         - POSTGRES_DB=app
+       ports:
+         - "5432:5432"
+       networks:
+         - test
+  
+
+    web:
+      build: .
+      links:
+        - "db"
+      depends_on:
+         - db
+      restart: always
+      environment:
+        - FLASK_APP=/python-sample-app/app.py
+        - POSTGRESQL_URL=postgresql://postgres:postgres@db:5432/app
+      ports:
+        - "5000:5000"
+      command: bash -c './wait-for-it.sh db:5432 -- flask db upgrade && python app.py'
+      networks:
+           - test
