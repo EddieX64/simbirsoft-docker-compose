@@ -2,6 +2,7 @@
 
 To run the project:
 
+* docker-compose build
 * docker-compose up -d
 
 Check if everything works:
